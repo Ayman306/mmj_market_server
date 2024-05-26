@@ -1,0 +1,1 @@
+SELECT * FROM jobpost where name = $1;
