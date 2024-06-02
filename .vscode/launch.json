@@ -25,11 +25,11 @@
             "request": "launch",
             "name": "Launch Program",
             "preLaunchTask": "npm: local",
-            "program": "${workspaceRoot}/dist/app.js",
-            "cwd": "${workspaceRoot}",
+            "program": "${workspaceFolder}/dist/app.js",
+            "cwd": "${workspaceFolder}",
             "outFiles": [],
             "sourceMaps": true,
-            "envFile": "${workspaceRoot}/.env"
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

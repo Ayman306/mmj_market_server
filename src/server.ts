@@ -1,24 +1,6 @@
 /*
     jobs- 
-        jobPost details add - done
-        contact  details  add - done
-        media details add - done
-
-        jopbPost details update
-        contact details update
-        media details update
-
-        ///////////////////
-        remove media table, create a job post media column as string json array
-        for array json the first from front end the values must be 
-        [{
-            fileTtitle:'Business / Menu',
-            filename:'',
-            fileUrl:''
-        }]
-        /////////////////
         make use of indexing in table
-        convert id's into uuid
         
 
 /////////////////
