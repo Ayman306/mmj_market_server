@@ -11,5 +11,8 @@ export const userSql={
 }
 export const jobPostSql={
   getAllJobPosts: loadQuery('get.all.job_post.sql','jobPost'),
-  getJobPostByName: loadQuery('get.job_post.by.name.sql','jobPost')
+  getJobPostById: loadQuery('get.job.detail.by.id.sql','jobPost')
+}
+export const categorySql={
+  getAllJobPosts: loadQuery('get.all.category.sql','category'),
 }
