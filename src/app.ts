@@ -3,11 +3,14 @@
 import express, { Request, Response, NextFunction } from 'express';
 import indexRouter from './router/index';
 import dotenv from 'dotenv';
+import { configureMiddleware } from './utils/configureMiddleWare';
 
 dotenv.config();
-
 const app = express();
 const port = process.env.PORT || 3000;
+
+// corse error 
+configureMiddleware(app);
 
 // Middleware to log requests
 app.use((req: Request, res: Response, next: NextFunction) => {
