@@ -8,8 +8,8 @@ export class jobPostRepositoryClass{
             try {
                 let dbSql
                 let result
-                if(body.length){
-                    dbSql = jobPostSql.getJobPostByName
+                if(body.length >0){
+                    dbSql = jobPostSql.getJobPostById
                     result = await dbUtility.query(dbSql,[body])
                 }else{
                     dbSql = jobPostSql.getAllJobPosts
@@ -30,42 +30,23 @@ export class jobPostRepositoryClass{
             try {
                 let tableSql:any[]=[]
                 let configSql = {table:'jobpost'}
+                if (data.media.files && data.media.files.length > 0) {
+                data.job_detail.media = JSON.stringify(data.media.files)
+                }
                 let dbSql = dbUtility.insertSQL(data.job_detail,configSql)
                  dbUtility.query(dbSql).then((res)=>{
 
 //  insert of contact 
                 if (data.contact_details.contact_available) {
                     delete data.contact_details.contact_available;
-                    data.contact_details['jobpostid'] = res[0].id;
+                    data.contact_details['jobpost_id'] = res[0].id;
               
                     const configSql = { table: 'contact' };
                     let dbSql = dbUtility.insertSQL(data.contact_details,configSql)
-                    tableSql.push(dbSql)
+                    dbUtility.query(dbSql).then((res)=>{
+                        resolve(res)
+                    })
                   }
-// insert of media            
-                    if (data.media.files && data.media.files.length > 0) {
-                    const configSql = { table: 'media', schema: 'public' };
-
-                    for (const file of data.media.files) {
-                    file['jobpostid']=res[0].id
-                    const dbSql = dbUtility.insertSQL(file, configSql);
-                    tableSql.push(dbSql)
-                        }
-                      }
-                      if(tableSql.length){
-                        pool.tx((t:any)=>{
-                            let tableSqlBatch:any[] =[]
-                            tableSql.forEach(sql=>{
-                                console.log(sql)
-                                tableSqlBatch.push(t.query(sql))
-                            })
-                            t.batch(tableSqlBatch).then((data:any)=>{
-                                resolve(data)
-                            }).catch((err:any)=>{
-                                reject(err)
-                            })
-                        })
-                      }
                     })
             } catch (error) {
                 console.log(error)
@@ -79,10 +60,26 @@ export class jobPostRepositoryClass{
   public  updateJobPostRepository(data: any):any{
         let dbPromise = new Promise(async(resolve,reject)=>{
             try {
-                let configSql = {table:'job_posts',uniqueKey:'jobpostid'}
-                let dbSql = dbUtility.upsertSQL(data,configSql)
-                const result = await dbUtility.query(dbSql)
-                resolve(result)
+                let configSql = {table:'jobpost'}
+                if (data?.media?.files && data?.media?.files.length > 0) {
+                    data.job_detail.media = JSON.stringify(data?.media?.files)
+                    }
+                let dbSql = dbUtility.updateSQL(data.job_detail,configSql)
+                 await dbUtility.query(dbSql).then(async (res)=>{
+
+                    if (data?.contact_details?.contact_available) {
+                        delete data.contact_details.contact_available;
+                        // data.contact_details['jobpost_id'] = res[0].id;
+                  
+                        const configSql = { table: 'contact', uniqueKey:'jobpost_id'};
+                        let dbSql = dbUtility.upsertSQL(data.contact_details,configSql)
+                        await dbUtility.query(dbSql).then((res)=>{
+                            resolve(res)
+                        })
+                      }
+
+                 })
+                resolve([])
             } catch (error) {
                 console.log(error)
                 reject(error)
@@ -90,7 +87,26 @@ export class jobPostRepositoryClass{
         })
         return dbPromise
     }
+public deleteJobPostRepository(data:any):any {
+    let dbPromise = new Promise(async(resolve,reject)=>{
+        try {
+            let configSql = {table:'contact'}
+            let dbSql = dbUtility.deleteRow(data.contact_details,configSql)
+            await dbUtility.query(dbSql).then((res)=>{
+            let configSql = {table:'contact'}
+            let dbSql = dbUtility.deleteRow(data.job_detail,configSql)
+            dbUtility.query(dbSql).then((res)=>{
+                resolve(res)
+                })
+            })
+        } catch (error) {
+            console.log(error)
+            reject(error)
+        }
+    })
+    return dbPromise
 
+}
     
 }
 export const jobPostRepository = new jobPostRepositoryClass()

@@ -10,6 +10,8 @@ export class job_postRouterClass{
     this.router.post('/',jobPostController.getJobPostList)
     this.router.post('/add',jobPostController.addNewJobPost)
     this.router.post('/update',jobPostController.updateJobPost)
+    this.router.delete('/delete',jobPostController.deleteJobPost)
+
   }
 }
 export const jobPostRouter = new job_postRouterClass().router
