@@ -73,10 +73,12 @@ export class dbUtilityClass{
           columnSet = Object.keys(row[0]);
           row = pgp.helpers.update(row, columnSet, { schema: configSQL.schema, table: configSQL.table }) + ` WHERE v.id = t.id` + " RETURNING t.id";
       } else {
+        const colId = row.id.toString()
+        delete row.id
           // row.updated_by = configSQL.userid;
           row.updated_date = pgp.as.date(new Date());
           columnSet = Object.keys(row);
-          row = pgp.helpers.update(row, columnSet, { schema: configSQL.schema, table: configSQL.table }) + " where id = " + row.id + " RETURNING id";
+          row = pgp.helpers.update(row, columnSet, { schema: configSQL.schema, table: configSQL.table }) + pgp.as.format(" WHERE id = $1 RETURNING id", [colId]);
       }
 
       return row;
@@ -101,7 +103,7 @@ export class dbUtilityClass{
             { table: configSQL.table });
 
         onConflict = ` ON CONFLICT(${configSQL.uniqueKey}) DO UPDATE SET ` +
-            cs.assignColumns({ from: 'EXCLUDED', skip: ['created_date', 'created_by'] });
+            cs.assignColumns({ from: 'EXCLUDED', skip: ['created_date'] });
 
     }
 
@@ -140,6 +142,14 @@ public updateSQLMultipleKey(row:any, configSQL:any, key?:any): any {
   }
 
   return row;
+}
+public deleteRow(row:any,configSql:any){
+    let colId= row.id.toString()
+
+    return `DELETE FROM  ${configSql.table} where id = '${colId}'`
+}
+public deleteRowCustom(row:any,configSql:any,key:any){
+    return `DELETE FROM  ${configSql.table} where ${key} = ${row[key]}`
 }
 }
 
