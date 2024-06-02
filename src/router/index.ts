@@ -3,6 +3,7 @@
 import express, { Router, Request, Response } from 'express';
 import { userRouter } from './user.route';
 import { jobPostRouter } from './jobPost.route';
+import { categoryRouter } from './category.route';
 const app = express()
 const router = Router();
 
@@ -17,7 +18,8 @@ app.use('/user', userRouter);
 // jobs router 
 app.use('/job',jobPostRouter)
 
-// Define another route
+// category route
+app.use('/category',categoryRouter)
 
 
 export default app;
