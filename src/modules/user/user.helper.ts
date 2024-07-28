@@ -5,10 +5,15 @@ import redis from 'redis'
 
 class userHelperClass {
   // cache: { [key: string]: { data: any; expiry: number } } = {}
-  public async generatePassword(): Promise<Object> {
+  public async generatePassword(password = ''): Promise<Object> {
     // return crypto.randomBytes(8).toString('hex')
-    const randomNumber = randomBytes(2).toString('hex')
-    const plainPassword = `mmj${randomNumber}`
+    let plainPassword
+    if (password?.length == 0) {
+      const randomNumber = randomBytes(2).toString('hex')
+      plainPassword = `mmj${randomNumber}`
+    } else {
+      plainPassword = password
+    }
 
     // Hash the password
     const saltRounds = 10

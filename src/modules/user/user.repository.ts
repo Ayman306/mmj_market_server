@@ -84,6 +84,10 @@ export class userRepositoryClass {
         }
 
         const user = result[0]
+        if (body?.platform != user.role) {
+          reject({ error: 'Forbidden' })
+          return
+        }
         const isPasswordValid = await bcrypt.compare(password, user.password)
 
         if (!isPasswordValid) {
@@ -106,6 +110,36 @@ export class userRepositoryClass {
     return dbPromise
   }
 
+  public resetPasswordRepository(body: any): any {
+    let dbPromise = new Promise(async (resolve, reject) => {
+      try {
+        const { password } = body
+        const dbSql = userSql.getUserByEmail
+        const result = await dbUtility.query(dbSql, body)
+
+        if (result.length === 0) {
+          reject({ error: 'User not found' })
+          return
+        }
+        body.id = result[0]?.id
+        if (body?.platform != result[0].role) {
+          reject({ error: 'Forbidden' })
+          return
+        }
+        const generatedPassword: any =
+          await userHelper.generatePassword(password)
+        delete body?.email
+        body.password = generatedPassword.hashed
+
+        this.updateUserRepository(body)
+          .then((res: any) => resolve(res))
+          .catch((err: any) => reject(err))
+      } catch (error) {
+        reject(error)
+      }
+    })
+    return dbPromise
+  }
   // private generateAccessToken(user: any): string {
   //   return jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
   //     expiresIn: '15m',

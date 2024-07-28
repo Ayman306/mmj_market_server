@@ -11,6 +11,8 @@ export class userRouterClass {
     this.router.post('/add', userController.addnewUser)
     this.router.post('/update', userController.updateUser)
     this.router.post('/login', userController.loginUser)
+    this.router.post('/reset-password', userController.resetPassword)
+
     // this.router.post('/refresh-token', userController.refreshToken)
   }
 }

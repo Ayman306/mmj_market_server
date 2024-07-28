@@ -52,7 +52,7 @@ class userControllerClass {
   public resetPassword(req: Request, res: Response, next: NextFunction) {
     const user = req.body
     userRepository
-      .LoginUserRepository(user)
+      .resetPasswordRepository(user)
       .then((data: any) => {
         res.status(200).send(data)
       })
