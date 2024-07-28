@@ -16,7 +16,8 @@ SELECT
             'contact_available', true,
             'address', contact.address,
             'city', contact.city,
-            'state', contact.state
+            'state', contact.state,
+            'primary_contact', contact.primary_contact            
         )
     ) AS jobpost
 FROM 
