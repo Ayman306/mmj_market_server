@@ -1,4 +1,3 @@
-import pool from '../../config/db/dbConfig'
 import { dbUtility } from '../../config/models/db'
 import { jobPostSql } from '../../config/models/queries/queries'
 
@@ -18,7 +17,7 @@ export class jobPostRepositoryClass {
         } else {
           dbSql = `${jobPostSql.getAllJobPosts}`
 
-          const [jobPosts] = await Promise.all([dbUtility.query(dbSql, body)])
+          const jobPosts = await dbUtility.query(dbSql, body)
 
           const totalCount = parseInt(jobPosts?.length)
           const totalPages = Math.ceil(totalCount / body.itemsPerPage)
@@ -41,7 +40,6 @@ export class jobPostRepositoryClass {
 
   public insertJobPostRepository(data: any): any {
     let dbPromise = new Promise(async (resolve, reject) => {
-      // const client = await pool.connect()
       try {
         let tableSql: any[] = []
         let configSql = { table: 'jobpost' }
