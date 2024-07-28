@@ -2,7 +2,7 @@ import { dbUtility } from '../../config/models/db'
 import { jobPostSql } from '../../config/models/queries/queries'
 
 export class jobPostRepositoryClass {
-  public getAllJobPostRepository(request: any, body: any = {}): any {
+  public getAllJobPostRepository(body: any = {}): any {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
         let dbSql: string
@@ -15,7 +15,7 @@ export class jobPostRepositoryClass {
           dbSql = jobPostSql.getJobPostById
           result = await dbUtility.query(dbSql, [body.id])
         } else {
-          dbSql = `${jobPostSql.getAllJobPosts}`
+          dbSql = jobPostSql.getAllJobPosts
 
           const jobPosts = await dbUtility.query(dbSql, body)
 
@@ -43,8 +43,8 @@ export class jobPostRepositoryClass {
       try {
         let tableSql: any[] = []
         let configSql = { table: 'jobpost' }
-        if (data.media.files && data.media.files.length > 0) {
-          data.job_detail.media = JSON.stringify(data.media.files)
+        if (data?.media?.files && data?.media?.files.length > 0) {
+          data.job_detail.media = JSON.stringify(data?.media?.files)
         }
         let dbSql = dbUtility.insertSQL(data.job_detail, configSql)
         dbUtility.query(dbSql).then((res) => {

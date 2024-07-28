@@ -5,7 +5,7 @@ class jobPostControllerClass {
   public getJobPostList(req: Request, res: Response, next: NextFunction) {
     const job_post = req.body
     jobPostRepository
-      .getAllJobPostRepository(req, job_post)
+      .getAllJobPostRepository(job_post)
       .then((data: any) => {
         res.status(200).send(data)
       })
