@@ -17,14 +17,10 @@ export class jobPostRepositoryClass {
           result = await dbUtility.query(dbSql, [body.id])
         } else {
           dbSql = `${jobPostSql.getAllJobPosts}`
-          const countSql = 'SELECT COUNT(*) FROM jobpost where status = true'
 
-          const [jobPosts, countResult] = await Promise.all([
-            dbUtility.query(dbSql, body),
-            dbUtility.query(countSql),
-          ])
+          const [jobPosts] = await Promise.all([dbUtility.query(dbSql, body)])
 
-          const totalCount = parseInt(countResult[0].count)
+          const totalCount = parseInt(jobPosts?.length)
           const totalPages = Math.ceil(totalCount / body.itemsPerPage)
 
           resolve({
