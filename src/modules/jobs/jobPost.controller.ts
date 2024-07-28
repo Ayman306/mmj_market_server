@@ -3,7 +3,7 @@ import { jobPostRepository } from './jobPost.repository'
 
 class jobPostControllerClass {
   public getJobPostList(req: Request, res: Response, next: NextFunction) {
-    const job_post = req.body?.id
+    const job_post = req.body
     jobPostRepository
       .getAllJobPostRepository(req, job_post)
       .then((data: any) => {

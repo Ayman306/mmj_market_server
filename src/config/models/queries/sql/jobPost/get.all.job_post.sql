@@ -23,4 +23,4 @@ SELECT
 FROM 
     jobpost 
 JOIN 
-    contact ON jobpost.id = contact.jobpost_id where jobpost.status = true ;
+    contact ON jobpost.id = contact.jobpost_id where jobpost.status = true LIMIT ${itemsPerPage} OFFSET ${offset};

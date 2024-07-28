@@ -3,19 +3,38 @@ import { dbUtility } from '../../config/models/db'
 import { jobPostSql } from '../../config/models/queries/queries'
 
 export class jobPostRepositoryClass {
-  public getAllJobPostRepository(request: any, body = ''): any {
+  public getAllJobPostRepository(request: any, body: any = {}): any {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
-        let dbSql
-        let result
-        if (body.length > 0) {
+        let dbSql: string
+        let result: any[]
+        body.page = body.page || 1
+        body.itemsPerPage = body.itemsPerPage || 10
+        body.offset = (body.page - 1) * body.itemsPerPage
+
+        if (body.id) {
           dbSql = jobPostSql.getJobPostById
-          result = await dbUtility.query(dbSql, [body])
+          result = await dbUtility.query(dbSql, [body.id])
         } else {
-          dbSql = jobPostSql.getAllJobPosts
-          result = await dbUtility.query(dbSql)
+          dbSql = `${jobPostSql.getAllJobPosts}`
+          const countSql = 'SELECT COUNT(*) FROM jobpost where status = true'
+
+          const [jobPosts, countResult] = await Promise.all([
+            dbUtility.query(dbSql, body),
+            dbUtility.query(countSql),
+          ])
+
+          const totalCount = parseInt(countResult[0].count)
+          const totalPages = Math.ceil(totalCount / body.itemsPerPage)
+
+          resolve({
+            result: jobPosts,
+            total: totalCount,
+            page: body.page,
+            itemsPerPage: body.itemsPerPage,
+            totalPages,
+          })
         }
-        resolve(result)
       } catch (error) {
         console.log(error)
         reject(error)
@@ -26,7 +45,7 @@ export class jobPostRepositoryClass {
 
   public insertJobPostRepository(data: any): any {
     let dbPromise = new Promise(async (resolve, reject) => {
-      const client = await pool.connect()
+      // const client = await pool.connect()
       try {
         let tableSql: any[] = []
         let configSql = { table: 'jobpost' }
