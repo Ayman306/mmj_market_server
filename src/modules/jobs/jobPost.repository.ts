@@ -2,18 +2,19 @@ import { dbUtility } from '../../config/models/db'
 import { jobPostSql } from '../../config/models/queries/queries'
 
 export class jobPostRepositoryClass {
-  public getAllJobPostRepository(body: any = {}): any {
+  public getAllJobPostRepository(body: any): any {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
         let dbSql: string
-        let result: any[]
+        let result: any
         body.page = body.page || 1
         body.itemsPerPage = body.itemsPerPage || 10
         body.offset = (body.page - 1) * body.itemsPerPage
 
-        if (body.id) {
+        if (body?.id?.length) {
           dbSql = jobPostSql.getJobPostById
           result = await dbUtility.query(dbSql, [body.id])
+          resolve(result)
         } else {
           dbSql = jobPostSql.getAllJobPosts
 
@@ -76,7 +77,7 @@ export class jobPostRepositoryClass {
           data.job_detail.media = JSON.stringify(data?.media?.files)
         }
         let dbSql = dbUtility.updateSQL(data.job_detail, configSql)
-        await dbUtility.query(dbSql).then(async (res) => {
+        await dbUtility.query(dbSql).then(async (val) => {
           if (data?.contact_details?.contact_available) {
             delete data.contact_details.contact_available
             // data.contact_details['jobpost_id'] = res[0].id;
@@ -86,6 +87,8 @@ export class jobPostRepositoryClass {
             await dbUtility.query(dbSql).then((res) => {
               resolve(res)
             })
+          } else {
+            resolve(val)
           }
         })
         resolve([])

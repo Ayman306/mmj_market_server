@@ -1,1 +1,1 @@
-SELECT * FROM users where name = ${name};
+SELECT * FROM users where name = ${name} or id = ${id};

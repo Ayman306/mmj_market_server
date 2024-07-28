@@ -129,6 +129,7 @@ export class userRepositoryClass {
         const generatedPassword: any =
           await userHelper.generatePassword(password)
         delete body?.email
+        delete body?.platform
         body.password = generatedPassword.hashed
 
         this.updateUserRepository(body)
@@ -140,26 +141,6 @@ export class userRepositoryClass {
     })
     return dbPromise
   }
-  // private generateAccessToken(user: any): string {
-  //   return jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-  //     expiresIn: '15m',
-  //   })
-  // }
-
-  // private generateRefreshToken(user: any): string {
-  //   return jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET!, {
-  //     expiresIn: '7d',
-  //   })
-  // }
-
-  // private async storeRefreshToken(
-  //   userId: number,
-  //   refreshToken: string,
-  // ): Promise<void> {
-  //   await this.redisClient.set(`refresh_token:${userId}`, refreshToken, {
-  //     EX: 7 * 24 * 60 * 60,
-  //   }) // 7 days
-  // }
 }
 
 export const userRepository = new userRepositoryClass()

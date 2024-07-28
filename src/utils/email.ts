@@ -8,8 +8,8 @@ class emailUtilityClass {
       port: 587,
       secure: false,
       auth: {
-        user: 'cristina.botsford@ethereal.email',
-        pass: 'Rdh3kn2pSKXg5QCDX6',
+        user: process.env.EMAIL_AUTH_USER,
+        pass: process.env.EMAIL_AUTH_PASS,
       },
     })
 

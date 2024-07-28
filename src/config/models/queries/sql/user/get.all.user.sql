@@ -1,1 +1,1 @@
-SELECT * FROM users;
+SELECT id,username,name,role,status,email FROM users;

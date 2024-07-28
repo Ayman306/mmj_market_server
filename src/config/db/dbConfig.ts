@@ -11,6 +11,7 @@ const dbConfig = {
   database: process.env.DB_DATABASE,
   password: String(process.env.DB_PASSWORD), // Ensure password is a string
   port: Number(process.env.DB_PORT),
+  max: 30,
 }
 
 const pool = pgp(dbConfig)

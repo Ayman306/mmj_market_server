@@ -8,7 +8,8 @@ SELECT
             'responsibility', jobpost.responsibility,
             'employment_type', jobpost.employment_type,
             'media',jobpost.media,
-            'created_date',jobpost.created_date
+            'created_date',jobpost.created_date,
+            'status',jobpost.status
         ),
         'contact_details', json_build_object(
             'id',contact.id,
@@ -23,4 +24,10 @@ SELECT
 FROM 
     jobpost 
 JOIN 
-    contact ON jobpost.id = contact.jobpost_id where jobpost.status = true LIMIT ${itemsPerPage} OFFSET ${offset};
+    contact ON jobpost.id = contact.jobpost_id 
+WHERE 
+    CASE 
+    WHEN ${status}::TEXT = 'any' THEN true
+    ELSE jobpost.status::TEXT = ${status}::TEXT
+END
+LIMIT ${itemsPerPage} OFFSET ${offset};
