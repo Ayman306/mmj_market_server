@@ -34,7 +34,7 @@ export class userRepositoryClass {
         const generatedPassword: any = await userHelper.generatePassword()
         data.password = generatedPassword.hashed
         data.status = true
-        const emailBody = `<p>One time password: <strong>${generatedPassword.plainPassword}</strong>. Please change it after your first login.</p>`
+        const emailBody = `<p>Hello ${data.name}, <br>Your one time password: <strong>${generatedPassword.plainPassword}</strong>. <br> Please change it after your first login.</p>`
 
         let configSql = { table: 'users' }
         let dbSql = dbUtility.insertSQL(data, configSql)

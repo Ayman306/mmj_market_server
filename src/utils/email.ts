@@ -4,9 +4,10 @@ class emailUtilityClass {
   public async sendEmail(email: string, body: string): Promise<void> {
     let transporter = nodemailer.createTransport({
       // Configure your email service here
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL_AUTH_USER,
         pass: process.env.EMAIL_AUTH_PASS,
@@ -14,9 +15,9 @@ class emailUtilityClass {
     })
 
     await transporter.sendMail({
-      from: 'nmayaan306.au@gmail.com',
+      from: 'aymanuddin1111.au@gmail.com',
       to: email,
-      subject: 'Your New Account Password',
+      subject: 'Your Account Password',
       html: body,
     })
     //   }
