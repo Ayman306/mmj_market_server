@@ -1,1 +1,1 @@
-select * from category;
+select id,name,media,key,status from category;

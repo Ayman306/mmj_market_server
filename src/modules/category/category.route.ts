@@ -7,7 +7,7 @@ export class categoryRouterClass {
     this.config()
   }
   private config(): void {
-    this.router.get('/', categoryController.getCategory)
+    this.router.post('/', categoryController.getCategory)
     this.router.post('/add', categoryController.addNewCategory)
     this.router.post('/update', categoryController.updateCategory)
     this.router.delete('/delete', categoryController.deleteCategory)

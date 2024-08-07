@@ -2,11 +2,17 @@ import { dbUtility } from '../../config/models/db'
 import { categorySql } from '../../config/models/queries/queries'
 
 export class categoryRepositoryClass {
-  public getCategoryListRepository(): any {
+  public getCategoryListRepository(data: any): any {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
-        let dbSql = categorySql.getAllJobPosts
-        let result = await dbUtility.query(dbSql)
+        let dbSql
+        if (Object.keys(data)?.length) {
+          dbSql = categorySql.getCategoryById
+          // data = { id: data }
+        } else {
+          dbSql = categorySql.getAllCategory
+        }
+        let result = await dbUtility.query(dbSql, data)
         resolve(result)
       } catch (error) {
         console.log(error)

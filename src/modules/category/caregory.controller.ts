@@ -4,8 +4,9 @@ import { categoryRepository } from './category.repository'
 
 class categoryControllerClass {
   public getCategory(req: Request, res: Response, next: NextFunction) {
+    const data = req.body
     categoryRepository
-      .getCategoryListRepository()
+      .getCategoryListRepository(data)
       .then((data: any) => {
         res.status(200).send(data)
       })

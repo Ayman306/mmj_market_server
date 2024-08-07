@@ -1,0 +1,1 @@
+select id,name,media,key,status from category where id = ${id};
