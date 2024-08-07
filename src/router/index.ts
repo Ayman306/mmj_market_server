@@ -1,27 +1,22 @@
 // src/routes/index.ts
 
-import express, { Router, Request, Response } from 'express'
+import express from 'express'
 import { userRouter } from '../modules/user/user.route'
 import { jobPostRouter } from '../modules/jobs/jobPost.route'
 import { categoryRouter } from '../modules/category/category.route'
 import refreshToken from '../utils/refreshToken'
-const app = express()
-const router = Router()
+export class baseRouterClass {
+  public router: express.Router = express.Router()
 
-// Define a simple route
-router.get('/', (req: Request, res: Response) => {
-  res.send('Define route')
-})
+  constructor() {
+    this.config()
+  }
+  public config(): void {
+    this.router.use('/user', userRouter)
+    this.router.use('/job', jobPostRouter)
+    this.router.use('/category', categoryRouter)
+    this.router.use('/auth', refreshToken)
+  }
+}
 
-// user router
-app.use('/user', userRouter)
-
-// jobs router
-app.use('/job', jobPostRouter)
-
-// category route
-app.use('/category', categoryRouter)
-
-app.use('/auth', refreshToken)
-
-export default app
+export const baseRouter = new baseRouterClass().router
