@@ -16,5 +16,10 @@ export const jobPostSql = {
   getJobPostById: loadQuery('get.job.detail.by.id.sql', 'jobPost'),
 }
 export const categorySql = {
-  getAllJobPosts: loadQuery('get.all.category.sql', 'category'),
+  getAllCategory: loadQuery('get.all.category.sql', 'category'),
+  getCategoryById: loadQuery('get.category.by.id.sql', 'category'),
+}
+export const businessSql = {
+  getAllBusiness: loadQuery('get.all.business.sql', 'business'),
+  getBusinessById: loadQuery('get.business.by.id.sql', 'business'),
 }
