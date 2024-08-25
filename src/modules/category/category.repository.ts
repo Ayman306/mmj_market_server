@@ -56,7 +56,7 @@ export class categoryRepositoryClass {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
         let configSql = { table: 'category' }
-        let dbSql = dbUtility.deleteRow(data.contact_details, configSql)
+        let dbSql = dbUtility.deleteRow(data.contact_detail, configSql)
         let result = await dbUtility.query(dbSql)
         resolve(result)
       } catch (error) {

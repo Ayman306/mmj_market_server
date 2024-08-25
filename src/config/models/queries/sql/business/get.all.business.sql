@@ -11,7 +11,7 @@ SELECT
             'created_date',business.created_date,
             'status',business.status
         ),
-        'contact_details', json_build_object(
+        'contact_detail', json_build_object(
             'id',contact.id,
             'business_id', business.id,
             'contact_available', true,

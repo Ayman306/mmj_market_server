@@ -11,7 +11,7 @@ SELECT
             'created_date',business.created_date,
             'status',business.status
         ),
-        'contact_details', json_build_object(
+        'contact_detail', json_build_object(
             'id',contact.id,
             'contact_available', true, -- Assuming contact is available if a contact record exists
             'primary_contact', contact.primary_contact,
@@ -25,7 +25,7 @@ SELECT
             'web_url', contact.web_url
         )
     ) AS business
-FROM 
+FROM    
     business 
 JOIN 
     contact ON business.id = contact.business_id where business.status = true and business.id=${id};
