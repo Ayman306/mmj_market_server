@@ -10,6 +10,9 @@ export class jobPostRepositoryClass {
         body.page = body.page || 1
         body.itemsPerPage = body.itemsPerPage || 10
         body.offset = (body.page - 1) * body.itemsPerPage
+        body.status = body.status ? body.status : 'any'
+        body.search = body.search ? body.search : ''
+        body.filter = body.filter ? body.filter : ''
 
         if (body?.id?.length) {
           dbSql = jobPostSql.getJobPostById
@@ -42,25 +45,44 @@ export class jobPostRepositoryClass {
   public insertJobPostRepository(data: any): any {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
-        let tableSql: any[] = []
         let configSql = { table: 'jobpost' }
         if (data?.media?.files && data?.media?.files.length > 0) {
           data.job_detail.media = JSON.stringify(data?.media?.files)
         }
         let dbSql = dbUtility.insertSQL(data.job_detail, configSql)
-        dbUtility.query(dbSql).then((res) => {
-          //  insert of contact
-          if (data.contact_details.contact_available) {
-            delete data.contact_details.contact_available
-            data.contact_details['jobpost_id'] = res[0].id
+        const jobPostResult = await dbUtility.query(dbSql); // Await job post insertion
 
-            const configSql = { table: 'contact' }
-            let dbSql = dbUtility.insertSQL(data.contact_details, configSql)
-            dbUtility.query(dbSql).then((res) => {
-              resolve(res)
-            })
+        // Check if job post insertion was successful
+        if (!jobPostResult || jobPostResult.length === 0) {
+          return reject(new Error('Job post insertion failed'));
+        }
+
+        // Insert contact details only if job post insertion is successful
+        if (data.contact_detail.contact_available) {
+          delete data.contact_detail.contact_available
+          data.contact_detail['jobpost_id'] = jobPostResult[0].id
+
+          const contactConfigSql = { table: 'contact' }
+          let contactDbSql = dbUtility.insertSQL(data.contact_detail, contactConfigSql)
+
+          try {
+            const contactResult = await dbUtility.query(contactDbSql); // Await contact insertion
+
+            // Check if contact insertion was successful
+            if (!contactResult || contactResult.length === 0) {
+              // Rollback job post insertion if contact insertion fails
+              const del = dbUtility.deleteRow({ id: jobPostResult[0].id }, configSql);
+              await dbUtility.query(del)
+              return reject(new Error('Contact insertion failed'));
+            }
+          } catch (contactError: any) {
+            // Rollback job post insertion if contact insertion fails
+            const del = dbUtility.deleteRow({ id: jobPostResult[0].id }, configSql);
+            await dbUtility.query(del)
+            return reject(new Error('Contact insertion failed: ' + contactError.message));
           }
-        })
+        }
+        resolve(jobPostResult);
       } catch (error) {
         console.log(error)
         reject(error)
@@ -78,12 +100,12 @@ export class jobPostRepositoryClass {
         }
         let dbSql = dbUtility.updateSQL(data.job_detail, configSql)
         await dbUtility.query(dbSql).then(async (val) => {
-          if (data?.contact_details?.contact_available) {
-            delete data.contact_details.contact_available
-            // data.contact_details['jobpost_id'] = res[0].id;
+          if (data?.contact_detail?.contact_available) {
+            delete data.contact_detail.contact_available
+          // data.contact_detail['jobpost_id'] = res[0].id;
 
             const configSql = { table: 'contact', uniqueKey: 'jobpost_id' }
-            let dbSql = dbUtility.upsertSQL(data.contact_details, configSql)
+            let dbSql = dbUtility.upsertSQL(data.contact_detail, configSql)
             await dbUtility.query(dbSql).then((res) => {
               resolve(res)
             })
@@ -103,7 +125,7 @@ export class jobPostRepositoryClass {
     let dbPromise = new Promise(async (resolve, reject) => {
       try {
         let configSql = { table: 'contact' }
-        let dbSql = dbUtility.deleteRow(data.contact_details, configSql)
+        let dbSql = dbUtility.deleteRow(data.contact_detail, configSql)
         await dbUtility.query(dbSql).then((res) => {
           let configSql = { table: 'jobpost' }
           let dbSql = dbUtility.deleteRow(data.job_detail, configSql)

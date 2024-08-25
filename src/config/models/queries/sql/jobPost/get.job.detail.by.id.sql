@@ -15,7 +15,7 @@ SELECT
             'media',jobpost.media,
             'created_date',jobpost.created_date
         ),
-        'contact_details', json_build_object(
+        'contact_detail', json_build_object(
             'id',contact.id,
             'jobpost_id', jobpost.id,
             'contact_available', true, -- Assuming contact is available if a contact record exists
