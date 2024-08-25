@@ -25,15 +25,12 @@ class appClass {
     //enabled cron schedules
     scheduler.start()
     // Middleware to log requests
-    this.app.use((req: Request, res: Response, next: NextFunction) => {
-      console.log(`${req.method} request for '${req.url}'`)
-      next()
-    })
+
     // Error-handling middleware
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction): void => {
         console.error(err.stack)
-        res.status(500)
+        res.status(500).json(err)
       },
     )
     //Not Found Routers

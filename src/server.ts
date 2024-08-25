@@ -23,3 +23,8 @@ glob('src/**/*.sql', options, function (er: any, files: any) {
 app.listen(process.env.API_PORT, () => {
   console.log('Express server listening on port ' + process.env.API_PORT)
 })
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`${req.method} request for '${req.url}'`)
+  next()
+})
