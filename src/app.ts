@@ -20,6 +20,11 @@ class appClass {
     this.app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }))
     // enabled cors middleware
     this.app.use(securityUtility.cors)
+
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
+      console.log(`${req.method} request for '${req.url}'`)
+      next()
+    })
     // Use the index router for all routes starting with '/'
     this.app.use('/', baseRouter)
     //enabled cron schedules
@@ -30,7 +35,7 @@ class appClass {
     this.app.use(
       (err: Error, req: Request, res: Response, next: NextFunction): void => {
         console.error(err.stack)
-        res.status(500).json(err)
+        res.status(500).json('Internal Server Error' + err)
       },
     )
     //Not Found Routers
