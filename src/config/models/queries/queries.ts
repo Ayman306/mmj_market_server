@@ -14,6 +14,7 @@ export const userSql = {
 export const jobPostSql = {
   getAllJobPosts: loadQuery('get.all.job_post.sql', 'jobPost'),
   getJobPostById: loadQuery('get.job.detail.by.id.sql', 'jobPost'),
+  getAllJobApproval: loadQuery('get.all.job.approval.sql', 'jobPost'),
 }
 export const categorySql = {
   getAllCategory: loadQuery('get.all.category.sql', 'category'),
