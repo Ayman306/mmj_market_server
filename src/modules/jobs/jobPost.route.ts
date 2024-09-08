@@ -11,6 +11,7 @@ export class job_postRouterClass {
     this.router.post('/', jobPostController.getJobPostList)
     this.router.post('/add', jobPostController.addNewJobPost)
     this.router.post('/update', jobPostController.updateJobPost)
+    this.router.post('/approval', jobPostController.getJobApprovalList)
     this.router.delete(
       '/delete',
       authenticateToken,
