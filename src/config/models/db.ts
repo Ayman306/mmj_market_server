@@ -62,7 +62,7 @@ export class dbUtilityClass {
 
   public updateSQL(row: any, configSQL: any): any {
     let columnSet
-    if (row[0]) {
+    if (Array.isArray(row)) {
       row.map((o: { updated_by: number; updated_date: Date }, i: any) => {
         // o.updated_by = parseInt(configSQL.userid);
         o.updated_date = new Date() //pgp.as.date(new Date())
