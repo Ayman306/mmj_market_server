@@ -23,6 +23,7 @@ class jobPostHelperClass {
         pincode: '',
         web_url: '',
         wa_number: '',
+        contact_type: []
     }
 }
 export const jobPostHelper = new jobPostHelperClass()

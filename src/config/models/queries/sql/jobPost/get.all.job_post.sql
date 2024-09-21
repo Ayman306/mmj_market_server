@@ -4,7 +4,7 @@ jobpost.title,
 jobpost.company_name,
 jobpost.employment_type,
 jobpost.media,
-jobpost.created_date,
+jobpost.updated_date,
 jobpost.status,
 
 contact.id contactid,

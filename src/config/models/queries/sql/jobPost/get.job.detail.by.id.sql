@@ -25,7 +25,8 @@ contact.state,
 contact.pincode,
 contact.geo_location,
 contact.web_url,
-contact.wa_number
+contact.wa_number,
+contact.contact_type
 
 FROM 
     jobpost 

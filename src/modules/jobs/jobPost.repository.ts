@@ -52,19 +52,20 @@ export class jobPostRepositoryClass {
         }
         const job_detail: any = jobPostHelper.job_detail
         job_detail['status'] = true
-        job_detail['approval_date'] = ''
-        job_detail['expiry_date'] = ''
-        if (data.expiry_date.length == 0) {
+        job_detail['approval_date'] = null
+        job_detail['expiry_date'] = null
+        if (!data.expiry_date) {
           const currentDate = new Date();
           const expiryDate = new Date(currentDate.setDate(currentDate.getDate() + 15));
-          data.expiry_date = expiryDate
+          data.expiry_date = expiryDate.toISOString().slice(0, 19).replace('T', ' '); // Format to 'YYYY-MM-DD HH:mm:ss'
+          console.log(data.expiry_date);
         }
         const jobfields = ['title', 'company_name', 'description', 'responsibility', 'qualification', 'employment_type', 'salary_range', 'number_of_opening', 'apply_url', 'notes', 'status', 'approval_date', 'expiry_date'];
-        jobfields?.forEach(field => job_detail[field] = data[field] || (field === 'status' ? false : ''));
+        jobfields?.forEach(field => job_detail[field] = data[field] || (field === 'status' ? false : null));
 
         const contact_detail: any = jobPostHelper.contact_detail
-        const contactFields = ['primary_contact', 'alternative_contact', 'email', 'address', 'city', 'state', 'pincode', 'web_url', 'wa_number'];
-        contactFields.forEach(field => contact_detail[field] = data[field] || '');
+        const contactFields = ['primary_contact', 'alternative_contact', 'email', 'address', 'city', 'state', 'pincode', 'web_url', 'wa_number', 'contact_type'];
+        contactFields.forEach(field => contact_detail[field] = data[field] || null);
 
 
         let dbSql = dbUtility.insertSQL(job_detail, configSql)
@@ -78,25 +79,30 @@ export class jobPostRepositoryClass {
         // Insert contact details only if job post insertion is successful
         contact_detail['jobpost_id'] = jobPostResult[0].id
 
-          const contactConfigSql = { table: 'contact' }
+        const contactConfigSql = { table: 'contact' }
         let contactDbSql = dbUtility.insertSQL(contact_detail, contactConfigSql)
 
-          try {
-            const contactResult = await dbUtility.query(contactDbSql); // Await contact insertion
+        try {
+          const contactResult = await dbUtility.query(contactDbSql); // Await contact insertion
 
-            // Check if contact insertion was successful
-            if (!contactResult || contactResult.length === 0) {
-              // Rollback job post insertion if contact insertion fails
-              const del = dbUtility.deleteRow({ id: jobPostResult[0].id }, configSql);
-              await dbUtility.query(del)
-              return reject(new Error('Contact insertion failed'));
-            }
-          } catch (contactError: any) {
+          // Check if contact insertion was successful
+          if (!contactResult || contactResult.length === 0) {
             // Rollback job post insertion if contact insertion fails
+            const emailConfig = {
+              email: contact_detail.email,
+              subject: 'Job Post on MMJ!',
+              body: 'Approval request shared to admin!'
+            }
             const del = dbUtility.deleteRow({ id: jobPostResult[0].id }, configSql);
             await dbUtility.query(del)
-            return reject(new Error('Contact insertion failed: ' + contactError.message));
+            return reject(new Error('Contact insertion failed'));
           }
+        } catch (contactError: any) {
+          // Rollback job post insertion if contact insertion fails
+          const del = dbUtility.deleteRow({ id: jobPostResult[0].id }, configSql);
+          await dbUtility.query(del)
+          return reject(new Error('Contact insertion failed: ' + contactError.message));
+        }
         resolve(jobPostResult);
       } catch (error) {
         console.log(error)
@@ -124,7 +130,7 @@ export class jobPostRepositoryClass {
           job_detail['expiry_date'] = ''
           // Set job_detail properties from data
           const fields = ['id', 'title', 'company_name', 'description', 'responsibility', 'qualification', 'employment_type', 'salary_range', 'number_of_opening', 'apply_url', 'notes', 'expiry_date'];
-          fields?.forEach(field => job_detail[field] = data[field] || '');
+          fields?.forEach(field => job_detail[field] = data[field] || null);
 
           dbSql = dbUtility.updateSQL(job_detail, configSql)
         } else {
@@ -141,12 +147,12 @@ export class jobPostRepositoryClass {
           contactFields.forEach(field => contact_detail[field] = data[field] || '');
           contact_detail['jobpost_id'] = jobUpdate[0].id;
 
-            const configSql = { table: 'contact', uniqueKey: 'jobpost_id' }
+          const configSql = { table: 'contact', uniqueKey: 'jobpost_id' }
           let dbSql = dbUtility.upsertSQL(contact_detail, configSql)
-            await dbUtility.query(dbSql).then((res) => {
-              resolve(res)
-            })
-          } else {
+          await dbUtility.query(dbSql).then((res) => {
+            resolve(res)
+          })
+        } else {
           resolve(jobUpdate)
         }
         resolve([])
