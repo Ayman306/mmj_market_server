@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer')
 
 class emailUtilityClass {
-  public async sendEmail(email: string, body: string): Promise<void> {
+  public async sendEmail(data: any): Promise<void> {
     let transporter = nodemailer.createTransport({
       // Configure your email service here
       service: 'gmail',
@@ -16,9 +16,9 @@ class emailUtilityClass {
 
     await transporter.sendMail({
       from: 'aymanuddin1111.au@gmail.com',
-      to: email,
-      subject: 'Your Account Password',
-      html: body,
+      to: data.email,
+      subject: data.subject,
+      html: data.body,
     })
     //   }
   }

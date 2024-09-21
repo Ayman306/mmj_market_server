@@ -35,12 +35,15 @@ export class userRepositoryClass {
         data.password = generatedPassword.hashed
         data.status = true
         const emailBody = `<p>Hello ${data.name}, <br>Your one time password: <strong>${generatedPassword.plainPassword}</strong>. <br> Please change it after your first login.</p>`
-
+        const subject = 'Your Account Password';
         let configSql = { table: 'users' }
         let dbSql = dbUtility.insertSQL(data, configSql)
         const result = await dbUtility.query(dbSql)
+        const emailConfig = {
+          email: data.email, body: emailBody, subject,
+        }
         emailUtility
-          .sendEmail(data.email, emailBody)
+          .sendEmail(emailConfig)
           .then(() => {
             resolve(result)
           })
